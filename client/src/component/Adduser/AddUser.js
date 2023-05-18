@@ -1,25 +1,54 @@
-import { Box, Button, Dialog, TextField, styled } from '@mui/material';
+import { Box, Button, TextField, styled } from '@mui/material';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Header from "../Header/Header"
+import axios from "axios"
+
+const newUserData = {
+    name: "",
+    fatherName: "",
+    uidNumer: "",
+    cifNumber: "",
+    email: "",
+    imgUrl: "",
+    address: "",
+    mobileNumber: "",
+    accountNumber: "",
+    state: ""
+}
+
+
 
 const AddUser = () => {
-    const [user, setUser] = useState({ name: "", email: "", password: "", memberId: "" })
-    const [open, setOpen] = useState(true);
+    const [newUser, setNewUser] = useState(newUserData)
+
     const navigate = useNavigate();
+
     const handleChange = (e) => {
-        setUser({ ...user, [e.target.name]: e.target.value })
+        setNewUser({ ...newUser, [e.target.name]: e.target.value })
     }
 
 
-    const handleClose = () => {
-        setOpen(false)
-    }
 
     // signUpUser
-    const signUpUser = async () => {
-        navigate("/")
-        handleClose()
+    const signUpUser = async (e) => {
+        // add-new-user
+        try {
+            if (!(newUser.name && newUser.fatherName && newUser.uidNumer && newUser.cifNumber && newUser.email && newUser.address && newUser.mobileNumber && newUser.accountNumber && newUser.state)) {
+                alert("alll fields are required ")
+            }
+            const { data } = await axios.post("http://localhost:8080/add-new-user", newUser)
+            if (data.success) {
+                alert("data added successfully...")
+                navigate("/")
+            }
+
+        }
+        catch (error) {
+            console.log(error);
+        }
+        // console.log(newUser);
+
     }
     return (
         <Header>
@@ -29,35 +58,35 @@ const AddUser = () => {
                     <TextField
                         variant="standard"
                         name='name'
-                        value={user.name}
+                        value={newUser.name}
                         onChange={e => handleChange(e)}
                         label="Enter Your Name"
                     />
                     <TextField
                         variant="standard"
                         name='accountNumber'
-                        value={user.accountNumber}
+                        value={newUser.accountNumber}
                         onChange={e => handleChange(e)}
                         label="Enter accountNumber"
                     />
                     <TextField
                         variant="standard"
                         name='cifNumber'
-                        value={user.cifNumber}
+                        value={newUser.cifNumber}
                         onChange={e => handleChange(e)}
                         label="Enter cifNumber"
                     />
                     <TextField
                         variant="standard"
                         name='email'
-                        value={user.email}
+                        value={newUser.email}
                         onChange={e => handleChange(e)}
                         label="Enter email"
                     />
                     <TextField
                         variant="standard"
                         name='address'
-                        value={user.address}
+                        value={newUser.address}
                         onChange={e => handleChange(e)}
                         label="Enter address"
                     />
@@ -67,41 +96,41 @@ const AddUser = () => {
                     <TextField
                         variant="standard"
                         name='fatherName'
-                        value={user.fatherName}
+                        value={newUser.fatherName}
                         onChange={e => handleChange(e)}
                         label="Enter fatherName"
                     />
                     <TextField
                         variant="standard"
-                        name='uidNumber'
-                        value={user.uidNumber}
+                        name='uidNumer'
+                        value={newUser.uidNumer}
                         onChange={e => handleChange(e)}
-                        label="Enter uidNumber"
+                        label="Enter uidNumer"
                     />
                     <TextField
                         variant="standard"
-                        name='url'
-                        value={user.url}
+                        name='imgUrl'
+                        value={newUser.imgUrl}
                         onChange={e => handleChange(e)}
-                        label="Enter your image url"
+                        label="Enter your image Url"
                     />
                     <TextField
                         variant="standard"
                         name='mobileNumber'
-                        value={user.mobileNumber}
+                        value={newUser.mobileNumber}
                         onChange={e => handleChange(e)}
-                        label="Enter mobile Number"
+                        label="Enter your mobileNumber"
                     />
                     <TextField
                         variant="standard"
-                        name='address'
-                        value={user.address}
+                        name='state'
+                        value={newUser.state}
                         onChange={e => handleChange(e)}
-                        label="Enter address"
+                        label="Enter state"
                     />
                 </Wraper>
             </UserForm>
-            <AddUserBtn variant='contained' onClose={handleClose} onClick={() => signUpUser()}>AddUser</AddUserBtn>
+            <AddUserBtn variant='contained' onClick={() => signUpUser()}>AddUser</AddUserBtn>
         </Header>
     )
 }
@@ -109,9 +138,9 @@ const AddUser = () => {
 export default AddUser
 
 
-const Component = styled(Box)`
+// const Component = styled(Box)`
 
-`
+// `
 
 const Wraper = styled(Box)(({ theme }) => ({
     display: 'flex',

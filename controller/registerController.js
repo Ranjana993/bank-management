@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken"
 export const registerUser = async (req, res) => {
     try {
         const { name, email, memberID, password } = req.body;
-        if (!email || !name || !memberID || !password) {
+        if (!(email && name && memberID && password)) {
             res.status(400).send({ success: false, message: "Plz enter all field..." });
         }
         const existingUser = await registerModel.findOne({ email })
@@ -27,19 +27,26 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
     try {
         const { memberID, password } = req.body;
-        const existingUser = await registerModel.findOne({ memberID });
-        if (!existingUser) {
+        const user = await registerModel.findOne({ memberID });
+        if (!user) {
             res.status(401).send({ success: false, message: "user Not found with this ID " });
         }
-        const matchedPassword = await bcrypt.compare(password, existingUser.password)
+        const matchedPassword = await bcrypt.compare(password, user.password)
         if (!matchedPassword) {
             res.status(401).send({ success: false, message: "invalid memeberID or password" })
         }
 
-        // const token = await jwt.sign({ id: user._id }, process.env.JWT_TOKEN, { expiresIn: '2d' })
-        return res.status(200).send({ success: true, message: "login successfull" })
+        const token = await jwt.sign({ id: user._id }, process.env.JWT_TOKEN, { expiresIn: '2d' })
+        // console.log(token);
+        return res.status(200).send({ success: true, message: "login successfull"  , token})
     }
     catch (error) {
         res.status(500).send({ success: false, message: " error in login controller ", error })
     }
 }
+
+
+
+
+
+

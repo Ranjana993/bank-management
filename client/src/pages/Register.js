@@ -1,9 +1,11 @@
 import { Box, Button, Dialog, TextField, styled } from '@mui/material';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import axios from "axios"
 
 const Register = () => {
-    const [user, setUser] = useState({ name: "",  email: "", password: "", memberId: "" })
+    const [user, setUser] = useState({ name: "", memberID: "", email: "", password: "" })
+
     const [open, setOpen] = useState(true);
     const navigate = useNavigate();
     const handleChange = (e) => {
@@ -17,8 +19,26 @@ const Register = () => {
 
     // signUpUser
     const signUpUser = async () => {
-        navigate("/login")
-        handleClose()
+        try {
+            if (user.name === " " || user.email === " " || user.memberID === " " || user.password === " ") {
+                alert("Plz fill all data")
+            }
+            else {
+                const { data } = await axios.post("http://localhost:8080/register", user)
+                if (data.sucsess) {
+                    alert("register successfully");
+                }
+                navigate("/login")
+                setUser({ name: " ", memberID: " ", email: " ", password: " " })
+                handleClose()
+            }
+
+
+        } catch (error) {
+            console.log(error);
+        }
+
+
     }
     return (
         <Dialog open={open} PaperProps={{ sx: { maxWidth: 'unset' } }}>
@@ -34,10 +54,10 @@ const Register = () => {
                         />
                         <TextField
                             variant="standard"
-                            name='memberId'
-                            value={user.memberId}
+                            name='memberID'
+                            value={user.memberID}
                             onChange={e => handleChange(e)}
-                            label="Enter memberId"
+                            label="Enter memberID"
                         />
                         <TextField
                             variant="standard"
@@ -46,7 +66,7 @@ const Register = () => {
                             onChange={e => handleChange(e)}
                             label="Enter Email"
                         />
-                        
+
                         <TextField
                             variant="standard"
                             name='password'
@@ -54,7 +74,6 @@ const Register = () => {
                             onChange={e => handleChange(e)}
                             label="Enter Password"
                         />
-                        
                         <LoginBtn variant='contained' onClose={handleClose} onClick={() => signUpUser()}>Register</LoginBtn>
                     </Wraper>
                 </Box>

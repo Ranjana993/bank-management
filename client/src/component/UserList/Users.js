@@ -98,7 +98,6 @@ const Users = () => {
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (
-
                         <TableCell key={column.id} align={column.align}>
                           <Link style={{ textDecoration: 'none', color: 'inherit', width: '100vw' }} to={"/detailed-page"}>
                             {
@@ -127,7 +126,7 @@ const Users = () => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-    </Paper >
+    </Paper>
   );
 }
 export default Users

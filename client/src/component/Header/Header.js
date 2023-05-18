@@ -1,18 +1,32 @@
 import React from 'react'
 import { Box, Typography, styled } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 // import styled from '@emotion/styled'
 
 
 const Header = ({ children }) => {
+    const navigate = useNavigate()
+    const handleLogout = () => {
+        localStorage.clear()
+        navigate("/login")
+    }
     return (
         <div>
             <MainContainer>
                 <Box>
                     <Wrapper>
-                        <List><Link style={{color:"inherit" , textDecoration:"none"}} to={"/"}> LIST OF ALL USERS</Link> </List>
+                        <List><Link style={{ color: "inherit", textDecoration: "none" }} to={"/"}> LIST OF ALL USERS</Link> </List>
                         <List><Link style={{ color: "inherit", textDecoration: "none" }} to={"/add-user"}> ADD USER</Link> </List>
-                        <List><Link style={{ color: "inherit", textDecoration: "none" }} to={"/login"}>LOGIN</Link> </List>
+                        {
+                            (localStorage.getItem("token")) ?
+                                (
+                                    <List><Link style={{ color: "inherit", textDecoration: "none" }} onClick={handleLogout}>LOGOUT</Link> </List>
+                                )
+                                :
+                                (
+                                    <List><Link style={{ color: "inherit", textDecoration: "none" }} to={"/login"}>LOGIN</Link> </List>
+                                )
+                        }
                     </Wrapper>
                 </Box>
             </MainContainer>

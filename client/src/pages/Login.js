@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { Box, Button, Dialog, styled, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axios from "axios"
 
 const Login = () => {
-    const [login, setLogin] = useState({ Username: "", password: "" })
+    const [login, setLogin] = useState({ memberID: "", password: "" })
     const [open, setOpen] = useState(true);
     const navigate = useNavigate()
 
@@ -19,7 +20,23 @@ const Login = () => {
 
     // login
     const loginUser = async () => {
-        navigate("/")
+        try {
+            if (login.memberID === " " || login.password === " ") {
+                alert("plz fill all data");
+            }
+            else {
+                const { data } = await axios.post("http://localhost:8080/login", login);
+                if (data.success) {
+                    localStorage.setItem("token", data.token)
+                    alert("login successfully");
+                }
+                
+                navigate("/")
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
     return (
@@ -28,18 +45,16 @@ const Login = () => {
                 <Box style={{ display: 'flex', height: '100%' }}>
                     <Wraper>
                         <TextField
-                            label="Enter Your meberID"
+                            label="Enter Your memberID"
                             variant="standard"
-                            name='Username'
-                            value={login.Username}
-                            // autoComplete='off'
+                            name='memberID'
+                            value={login.memberID}
                             onChange={e => onValueChange(e)}
                         />
                         <TextField
-                            label="Enter Password"
+                            label="Enter password"
                             variant="standard"
                             name='password'
-                            // autoComplete='off'
                             value={login.password}
                             onChange={e => onValueChange(e)}
                         />

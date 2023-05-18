@@ -5,18 +5,20 @@ import Register from './pages/Register';
 import AddUser from "./component/Adduser/AddUser";
 import Users from "./component/UserList/Users";
 import DetailPage from "./pages/DtailPage";
+import ProtectedRoute from "./component/ProtectedRouting.js/ProtectedRoute";
+import Public from "./component/ProtectedRouting.js/Public";
 
 
 
 function App() {
   return (
     <Routes>
-      <Route path='/' element={<Home />} />
-      <Route path='/login' element={<Login />} />
-      <Route path='/register' element={<Register />} />
-      <Route path='/add-user' element={<AddUser />} />
-      <Route path='/all-users' element={<Users />} />
-      <Route path="/detailed-page" element={<DetailPage />} />
+      <Route path='/' element={<ProtectedRoute> <Home /></ProtectedRoute>} />
+      <Route path='/login' element={<Public><Login /> </Public>} />
+      <Route path='/register' element={<ProtectedRoute> <Register /> </ProtectedRoute>} />
+      <Route path='/add-user' element={<ProtectedRoute><AddUser /></ProtectedRoute>} />
+      <Route path='/all-users' element={<ProtectedRoute><Users /> </ProtectedRoute>} />
+      <Route path="/detailed-page" element={<ProtectedRoute> <DetailPage /></ProtectedRoute>} />
     </Routes>
   );
 }
