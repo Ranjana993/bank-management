@@ -1,8 +1,10 @@
-import { Box, Button, TextField, styled } from '@mui/material';
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import Header from "../Header/Header"
-import axios from "axios"
+import { Box, Button, TextField, styled } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import Header from '../component/Header/Header'
+import { useNavigate, useParams } from 'react-router-dom'
+import axios from 'axios'
+
+
 
 const newUserData = {
     name: "",
@@ -16,30 +18,43 @@ const newUserData = {
     accountNumber: "",
     state: ""
 }
-
-
-
-const AddUser = () => {
+const EditUser = () => {
     const [newUser, setNewUser] = useState(newUserData)
-
-    const navigate = useNavigate();
+    const { id } = useParams()
+    const navigate = useNavigate()
 
     const handleChange = (e) => {
         setNewUser({ ...newUser, [e.target.name]: e.target.value })
     }
 
 
+    const findUserByID = async () => {
+        try {
+            const { data } = await axios.get(`http://localhost:8080/get-single-user/${id}`, {
+                headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+            })
+            if (data.success) {
+                setNewUser(data.user)
+            }
+        }
+        catch (error) {
+            console.log("something went wrong while getting single user info", error)
+        }
+    }
 
-    // signUpUser
-    const signUpUser = async (e) => {
+    useEffect(() => {
+        findUserByID()
+    }, [])
+
+    const UpdateUser = async (e) => {
         // add-new-user
         try {
             if (!(newUser.name && newUser.fatherName && newUser.uidNumer && newUser.cifNumber && newUser.email && newUser.address && newUser.mobileNumber && newUser.accountNumber && newUser.state)) {
-                alert("alll fields are required ")
+                alert("all fields are required ")
             }
-            const { data } = await axios.post("http://localhost:8080/add-new-user", newUser)
+            const { data } = await axios.put(`http://localhost:8080/update-user/${id}`, newUser)
             if (data.success) {
-                alert("data added successfully...")
+                alert("data updated successfully...")
                 navigate("/")
             }
         }
@@ -47,9 +62,10 @@ const AddUser = () => {
             console.log(error);
         }
     }
+
     return (
         <Header>
-            <h1 style={{ textAlign: "center",marginTop:'22px' }}>ADD NEW USER </h1>
+            <h1 style={{ textAlign: "center" , marginTop:'22px'}}>EDIT CUSTOMER DETAIL </h1>
             <UserForm style={{ display: 'flex', height: '100%' }}>
                 <Wraper>
                     <TextField
@@ -57,35 +73,30 @@ const AddUser = () => {
                         name='name'
                         value={newUser.name}
                         onChange={e => handleChange(e)}
-                        label="Enter Your Name"
                     />
                     <TextField
                         variant="standard"
                         name='accountNumber'
                         value={newUser.accountNumber}
                         onChange={e => handleChange(e)}
-                        label="Enter accountNumber"
                     />
                     <TextField
                         variant="standard"
                         name='cifNumber'
                         value={newUser.cifNumber}
                         onChange={e => handleChange(e)}
-                        label="Enter cifNumber"
                     />
                     <TextField
                         variant="standard"
                         name='email'
                         value={newUser.email}
                         onChange={e => handleChange(e)}
-                        label="Enter email"
                     />
                     <TextField
                         variant="standard"
                         name='address'
                         value={newUser.address}
                         onChange={e => handleChange(e)}
-                        label="Enter address"
                     />
                 </Wraper>
                 {/*  */}
@@ -95,49 +106,42 @@ const AddUser = () => {
                         name='fatherName'
                         value={newUser.fatherName}
                         onChange={e => handleChange(e)}
-                        label="Enter fatherName"
                     />
                     <TextField
                         variant="standard"
                         name='uidNumer'
                         value={newUser.uidNumer}
                         onChange={e => handleChange(e)}
-                        label="Enter uidNumer"
                     />
                     <TextField
                         variant="standard"
                         name='imgUrl'
                         value={newUser.imgUrl}
                         onChange={e => handleChange(e)}
-                        label="Enter your image Url"
                     />
                     <TextField
                         variant="standard"
                         name='mobileNumber'
                         value={newUser.mobileNumber}
                         onChange={e => handleChange(e)}
-                        label="Enter your mobileNumber"
                     />
                     <TextField
                         variant="standard"
                         name='state'
                         value={newUser.state}
                         onChange={e => handleChange(e)}
-                        label="Enter state"
                     />
                 </Wraper>
             </UserForm>
-            <AddUserBtn variant='contained' onClick={() => signUpUser()}>AddUser</AddUserBtn>
+            <Box style={{display:'flex'}}>
+                <AddUserBtn variant='contained' onClick={() => navigate(`/`)}>Back</AddUserBtn>
+                <AddUserBtn variant='contained' onClick={() => UpdateUser()}>Update User</AddUserBtn>
+            </Box>
         </Header>
     )
 }
 
-export default AddUser
-
-
-// const Component = styled(Box)`
-
-// `
+export default EditUser
 
 const Wraper = styled(Box)(({ theme }) => ({
     display: 'flex',

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -7,77 +7,60 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import { Link } from "react-router-dom";
-
+import axios from "axios"
+import { styled } from '@mui/material';
+import SingleUserData from '../../pages/SingleUserData';
 
 const columns = [
   { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'fatherName', label: 'Father Name', minWidth: 100 },
+  { id: 'fatherName', label: 'Father Name', minWidth: 170 },
   {
-    id: 'accountNumber',
-    label: 'accountNumber',
-    minWidth: 170,
-    align: 'right',
-    format: (value) => value.toLocaleString('en-US'),
+    id: 'accountNo', label: 'accountNo', minWidth: 170,
   },
-  {
-    id: 'mobileNuber',
-    label: 'Mobile Number',
-    minWidth: 170,
-    align: 'right',
-    format: (value) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'email',
-    label: 'email',
-    minWidth: 170,
-    align: 'right',
-    format: (value) => value.toFixed(2),
-  },
+  { id: 'email', label: 'email', minWidth: 170 },
 ];
 
-function createData(name, fatherName, accountNumber, email, mobileNuber) {
-  // const density = accountNumber / mobileNuber;
-  return { name, fatherName, accountNumber, mobileNuber, email };
-}
-
-const rows = [
-  createData('India', 'IN', 1324171354, 3287263),
-  createData('China', 'CN', 1403500365, 9596961),
-  createData('Italy', 'IT', 60483973, 301340),
-  createData('United States', 'US', 327167434, 9833520),
-  createData('Canada', 'CA', 37602103, 9984670),
-  createData('Australia', 'AU', 25475400, 7692024),
-  createData('Germany', 'DE', 83019200, 357578),
-  createData('Ireland', 'IE', 4857000, 70273),
-  createData('Mexico', 'MX', 126577691, 1972550),
-  createData('Japan', 'JP', 126317000, 377973),
-  createData('France', 'FR', 67022000, 640679),
-  createData('United Kingdom', 'GB', 67545757, 242495),
-  createData('Russia', 'RU', 146793744, 17098246),
-  createData('Nigeria', 'NG', 200962417, 923768),
-  createData('Brazil', 'BR', 210147125, 8515767),
-];
 
 const Users = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rows, setRows] = useState([])
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+  const handleChangePage = (event, newPage) => setPage(newPage);
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
 
+
+  const allUserList = async () => {
+    try {
+      const { data } = await axios.get("http://localhost:8080/get-all-user", {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      });
+      if (data.success) {
+        setRows(data.users)
+      }
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
+  useEffect(() => {
+    allUserList();
+  }, [])
+
+
   return (
     <Paper sx={{ width: '100%', marginTop: '1rem' }}>
+      <h1 style={{ textAlign: 'center' }}>List of all customer</h1>
       <TableContainer sx={{ maxHeight: 540 }}>
         <Table aria-label=" table">
-          <TableHead >
-            <TableRow>
+          <TableHeader>
+            <TableRow style={{ fontSize: "19px" }}>
               {columns.map((column) => (
                 <TableCell
                   key={column.id}
@@ -88,32 +71,13 @@ const Users = () => {
                 </TableCell>
               ))}
             </TableRow>
-          </TableHead>
+          </TableHeader>
           <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          <Link style={{ textDecoration: 'none', color: 'inherit', width: '100vw' }} to={"/detailed-page"}>
-                            {
-                              column.format && typeof value === 'number'
-                                ? column.format(value)
-                                : value
-                            }
-
-                          </Link>
-                        </TableCell>
-
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+            {
+              rows.map((user) => (
+                <SingleUserData  user={user}/>
+              ))
+            }
           </TableBody>
         </Table>
       </TableContainer>
@@ -130,3 +94,10 @@ const Users = () => {
   );
 }
 export default Users
+
+
+const TableHeader = styled(TableHead)`
+  font-weight: 600 !important;
+  font-size:17px !important;
+
+`

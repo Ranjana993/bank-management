@@ -7,6 +7,7 @@ import Users from "./component/UserList/Users";
 import DetailPage from "./pages/DtailPage";
 import ProtectedRoute from "./component/ProtectedRouting.js/ProtectedRoute";
 import Public from "./component/ProtectedRouting.js/Public";
+import EditUser from "./pages/EditUser";
 
 
 
@@ -15,10 +16,11 @@ function App() {
     <Routes>
       <Route path='/' element={<ProtectedRoute> <Home /></ProtectedRoute>} />
       <Route path='/login' element={<Public><Login /> </Public>} />
-      <Route path='/register' element={<ProtectedRoute> <Register /> </ProtectedRoute>} />
+      <Route path='/register' element={<Public> <Register /> </Public>} />
       <Route path='/add-user' element={<ProtectedRoute><AddUser /></ProtectedRoute>} />
       <Route path='/all-users' element={<ProtectedRoute><Users /> </ProtectedRoute>} />
-      <Route path="/detailed-page" element={<ProtectedRoute> <DetailPage /></ProtectedRoute>} />
+      <Route path='/edit-user/:id' element={<ProtectedRoute><EditUser /> </ProtectedRoute>} />
+      <Route path="/detailed-page/:id" element={<ProtectedRoute> <DetailPage /></ProtectedRoute>} />
     </Routes>
   );
 }
